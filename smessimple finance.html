@@ -7,20 +7,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1e3a5f;
-            --primary-dark: #152a45;
-            --primary-light: #2d5a8a;
-            --accent: #2874a6;
+            --primary: #283f55;
+            --primary-dark: #1a2d3f;
+            --primary-light: #3d5a73;
+            --accent: #1e3a5f;
             --profitability: #d35400;
             --stability: #27ae60;
             --activity: #2980b9;
             --growth: #8e44ad;
-            --bg-light: #f8f9fc;
+            --bg-light: #f5f5f7;
             --bg-white: #ffffff;
             --text-dark: #1a1a2e;
             --text-gray: #64748b;
             --border: #e2e8f0;
-            --shadow: rgba(30, 58, 95, 0.08);
+            --shadow: rgba(40, 63, 85, 0.08);
         }
 
         * {
@@ -31,7 +31,7 @@
 
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            background: linear-gradient(135deg, #1e3a5f 0%, #152a45 100%);
+            background: #e8e8e8;
             min-height: 100vh;
             padding: 40px 20px;
             color: var(--text-dark);
@@ -39,7 +39,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
@@ -132,7 +132,7 @@
         .input-group {
             background: var(--bg-light);
             padding: 30px;
-            border-radius: 16px;
+            border-radius: 12px;
             margin-bottom: 25px;
         }
 
@@ -198,13 +198,13 @@
 
         .btn-analyze {
             width: 100%;
-            padding: 18px;
+            padding: 16px 32px;
             background: linear-gradient(135deg, var(--primary), var(--accent));
             color: white;
             border: none;
             border-radius: 12px;
             font-size: 1.1rem;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: 'Noto Sans KR', sans-serif;
@@ -213,7 +213,7 @@
 
         .btn-analyze:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px var(--shadow);
+            box-shadow: 0 8px 24px rgba(40, 116, 166, 0.3);
         }
 
         .btn-analyze:disabled {
@@ -225,17 +225,17 @@
         .result-section {
             display: none;
             padding: 50px 40px;
-            animation: fadeInUp 0.5s ease-out;
+            animation: fadeIn 0.6s ease-in;
         }
 
         .result-section.active {
             display: block;
         }
 
-        @keyframes fadeInUp {
+        @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(10px);
             }
             to {
                 opacity: 1;
@@ -263,7 +263,7 @@
         .result-chart {
             background: white;
             padding: 40px;
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: 0 4px 16px var(--shadow);
             margin-bottom: 40px;
         }
@@ -351,7 +351,7 @@
         .analysis-card {
             background: white;
             padding: 30px;
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: 0 4px 16px var(--shadow);
             border-top: 4px solid;
         }
@@ -400,7 +400,7 @@
         .consultant-comment {
             background: linear-gradient(135deg, rgba(30, 58, 95, 0.03), rgba(40, 116, 166, 0.05));
             padding: 40px;
-            border-radius: 16px;
+            border-radius: 12px;
             margin-bottom: 30px;
             border-left: 4px solid var(--primary);
         }
@@ -443,7 +443,7 @@
         .recommendation-section {
             background: linear-gradient(135deg, #f8f9fc, #e8f4f8);
             padding: 40px;
-            border-radius: 16px;
+            border-radius: 12px;
             margin-bottom: 30px;
         }
 
@@ -493,7 +493,7 @@
             background: var(--primary);
             color: white;
             padding: 30px;
-            border-radius: 16px;
+            border-radius: 12px;
             text-align: center;
             margin-bottom: 30px;
         }
@@ -505,13 +505,13 @@
 
         .btn-restart {
             width: 100%;
-            padding: 18px;
+            padding: 16px 32px;
             background: linear-gradient(135deg, var(--primary), var(--accent));
             color: white;
             border: none;
             border-radius: 12px;
             font-size: 1.05rem;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: 'Noto Sans KR', sans-serif;
@@ -520,7 +520,7 @@
 
         .btn-restart:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px var(--shadow);
+            box-shadow: 0 8px 24px rgba(40, 116, 166, 0.3);
         }
 
         .copyright {
@@ -751,7 +751,7 @@
                     <div class="recommendation-list" id="recommendationList"></div>
                 </div>
 
-                <button class="btn-restart" onclick="restart()">새로운 진단 시작하기</button>
+                <button class="btn-restart" onclick="restart()">처음부터 다시 진단하기</button>
 
                 <div class="contact-info">
                     <p>본 진단은 중소기업 및 소상공인을 위해 복잡한 경영 분석을 손쉽게 수행하실 수 있도록 제작된 간이 자가진단입니다.</p>
