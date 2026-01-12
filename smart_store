@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스마트상점 자가진단</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #283f55;
+            --primary-dark: #1a2d3f;
+            --primary-light: #3d5a73;
+            --accent: #1e3a5f;
+            --infrastructure: #0ea5e9;
+            --online: #8b5cf6;
+            --data: #10b981;
+            --automation: #f59e0b;
+            --bg-light: #f5f5f7;
+            --bg-white: #ffffff;
+            --text-dark: #1a1a2e;
+            --text-gray: #64748b;
+            --border: #e2e8f0;
+            --shadow: rgba(40, 63, 85, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: #f5f5f7;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: var(--text-dark);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--bg-white);
+            padding: 50px 40px;
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 20px 60px var(--shadow);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', 'Noto Sans KR', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 1.05rem;
+            color: var(--text-gray);
+            line-height: 1.8;
+            margin-bottom: 8px;
+        }
+
+        .main-content {
+            background: var(--bg-white);
+            padding: 0;
+            border-radius: 0 0 24px 24px;
+            box-shadow: 0 20px 60px var(--shadow);
+        }
+
+        .progress-bar {
+            background: var(--bg-light);
+            padding: 30px 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .progress-track {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.95rem;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .question-section {
+            padding: 50px 40px;
+            display: none;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        .question-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-header {
+            margin-bottom: 35px;
+        }
+
+        .question-category {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .question-number {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .question-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .question-subtitle {
+            font-size: 1rem;
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        .option {
+            background: var(--bg-light);
+            border: 2px solid var(--border);
+            padding: 20px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .option:hover {
+            background: #eef2f7;
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .option.selected {
+            background: #eef7ff;
+            border-color: var(--accent);
+            font-weight: 500;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .option-radio {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 2px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .option.selected .option-radio {
+            border-color: var(--accent);
+            background: var(--accent);
+        }
+
+        .option.selected .option-radio::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .option-content {
+            flex: 1;
+        }
+
+        .option-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .option-score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .result-section {
+            display: none;
+            padding: 50px 40px;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        .result-section.active {
+            display: block;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .result-header h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .result-header p {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+        }
+
+        .result-chart {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px var(--shadow);
+            margin-bottom: 40px;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .chart-bars {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            gap: 30px;
+            height: 300px;
+            padding: 0 20px;
+        }
+
+        .chart-bar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            height: 100%;
+        }
+
+        .chart-track {
+            width: 100%;
+            max-width: 100px;
+            height: 250px;
+            background: var(--bg-light);
+            border-radius: 10px 10px 0 0;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .chart-fill {
+            width: 100%;
+            border-radius: 10px 10px 0 0;
+            transition: height 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 0%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-fill.infrastructure { background: linear-gradient(180deg, var(--infrastructure), #0284c7); }
+        .chart-fill.online { background: linear-gradient(180deg, var(--online), #7c3aed); }
+        .chart-fill.data { background: linear-gradient(180deg, var(--data), #059669); }
+        .chart-fill.automation { background: linear-gradient(180deg, var(--automation), #d97706); }
+
+        .chart-score {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .chart-label {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        .consultant-comment {
+            background: var(--bg-light);
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .consultant-comment h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .consultant-comment h3::before {
+            content: '💼';
+            font-size: 1.6rem;
+        }
+
+        .consultant-comment-text {
+            font-size: 1.05rem;
+            line-height: 1.9;
+            color: var(--text-dark);
+            text-align: justify;
+            word-break: keep-all;
+            white-space: pre-line;
+        }
+
+        .consultant-comment-text strong {
+            color: var(--primary);
+            font-weight: 700;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .consultant-comment-text strong:first-child {
+            margin-top: 0;
+        }
+
+        .recommendation-section {
+            background: var(--bg-light);
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .recommendation-section h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .recommendation-section h3::before {
+            content: '💡';
+            font-size: 1.6rem;
+        }
+
+        .recommendation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .recommendation-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .recommendation-item h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .recommendation-item p {
+            font-size: 0.95rem;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        .contact-info {
+            background: #f5f5f7;
+            color: var(--text-dark);
+            padding: 30px 30px 30px 40px;
+            border-radius: 12px;
+            text-align: left;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .contact-info p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text-dark);
+            margin-bottom: 0;
+        }
+
+        .contact-info p:first-child {
+            margin-bottom: 20px;
+        }
+
+        .btn-restart {
+            width: 100%;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans KR', sans-serif;
+            margin-bottom: 20px;
+        }
+
+        .btn-restart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(40, 116, 166, 0.3);
+        }
+
+        .copyright {
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 12px;
+            }
+
+            .header, .question-section, .result-section {
+                padding: 30px 24px;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .question-title {
+                font-size: 1.25rem;
+            }
+
+            .option-score {
+                position: static;
+                margin-top: 12px;
+                margin-left: auto;
+            }
+
+            .chart-bars {
+                height: 250px;
+                gap: 15px;
+            }
+
+            .chart-track {
+                max-width: 60px;
+                height: 200px;
+            }
+
+            .chart-label {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>스마트상점 자가진단</h1>
+            <p>귀사의 디지털 전환 수준을 진단하여 스마트상점으로 도약할 수 있는 맞춤형 가이드를 제공합니다.</p>
+        </div>
+
+        <div class="main-content">
+            <div class="progress-bar">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">질문 1 / 12</div>
+            </div>
+
+            <!-- Question 1 -->
+            <div class="question-section active" data-question="1">
+                <div class="question-header">
+                    <span class="question-category">디지털 인프라</span>
+                    <div class="question-number">질문 1/12</div>
+                    <h2 class="question-title">POS 및 결제 시스템</h2>
+                    <p class="question-subtitle">귀사의 매장 내 결제 및 판매관리 시스템은 어느 수준입니까?</p>
+                </div>
+                <div class="options">
+                    <div class="option" data-score="5" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">통합형 스마트 POS 운영</div>
+                            </div>
+                        </label>
+                        <div class="option-score">5</div>
+                    </div>
+                    <div class="option" data-score="4" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">클라우드 기반 POS 사용</div>
+                            </div>
+                        </label>
+                        <div class="option-score">4</div>
+                    </div>
+                    <div class="option" data-score="3" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">기본 POS 시스템 운영</div>
+                            </div>
+                        </label>
+                        <div class="option-score">3</div>
+                    </div>
+                    <div class="option" data-score="2" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">간단한 카드단말기만 사용</div>
+                            </div>
+                        </label>
+                        <div class="option-score">2</div>
+                    </div>
+                    <div class="option" data-score="1" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">현금 중심 수기 관리</div>
+                            </div>
+                        </label>
+                        <div class="option-score">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="question-section" data-question="2">
+                <div class="question-header">
+                    <span class="question-category">디지털 인프라</span>
+                    <div class="question-number">질문 2/12</div>
+                    <h2 class="question-title">무인 주문 시스템</h2>
+                    <p class="question-subtitle">키오스크나 태블릿 주문 등 무인 주문 시스템을 운영하고 있습니까?</p>
+                </div>
+                <div class="options">
+                    <div class="option" data-score="5" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">AI 추천 기능까지 갖춘 키오스크 운영</div>
+                            </div>
+                        </label>
+                        <div class="option-score">5</div>
+                    </div>
+                    <div class="option" data-score="4" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">키오스크와 모바일 주문 병행</div>
+                            </div>
+                        </label>
+                        <div class="option-score">4</div>
+                    </div>
+                    <div class="option" data-score="3" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">키오스크 설치 완료</div>
+                            </div>
+                        </label>
+                        <div class="option-score">3</div>
+                    </div>
+                    <div class="option" data-score="2" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">도입 검토 중</div>
+                            </div>
+                        </label>
+                        <div class="option-score">2</div>
+                    </div>
+                    <div class="option" data-score="1" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">대면 주문만 가능</div>
+                            </div>
+                        </label>
+                        <div class="option-score">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="question-section" data-question="3">
+                <div class="question-header">
+                    <span class="question-category">디지털 인프라</span>
+                    <div class="question-number">질문 3/12</div>
+                    <h2 class="question-title">디지털 사이니지 및 안내 시스템</h2>
+                    <p class="question-subtitle">매장 내 디지털 메뉴판이나 광고 화면을 운영하고 있습니까?</p>
+                </div>
+                <div class="options">
+                    <div class="option" data-score="5" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">실시간 연동 스마트 사이니지 다수 운영</div>
+                            </div>
+                        </label>
+                        <div class="option-score">5</div>
+                    </div>
+                    <div class="option" data-score="4" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">디지털 메뉴판 정기 업데이트</div>
+                            </div>
+                        </label>
+                        <div class="option-score">4</div>
+                    </div>
+                    <div class="option" data-score="3" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">기본 디지털 메뉴판 설치</div>
+                            </div>
+                        </label>
+                        <div class="option-score">3</div>
+                    </div>
+                    <div class="option" data-score="2" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">도입 검토 중</div>
+                            </div>
+                        </label>
+                        <div class="option-score">2</div>
+                    </div>
+                    <div class="option" data-score="1" data-area="infrastructure">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">종이 메뉴판만 사용</div>
+                            </div>
+                        </label>
+                        <div class="option-score">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="question-section" data-question="4">
+                <div class="question-header">
+                    <span class="question-category">온라인 채널</span>
+                    <div class="question-number">질문 4/12</div>
+                    <h2 class="question-title">배달앱 운영</h2>
+                    <p class="question-subtitle">배달앱을 통한 온라인 주문을 받고 있습니까?</p>
+                </div>
+                <div class="options">
+                    <div class="option" data-score="5" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">자체 주문앱까지 운영하며 매출 50% 이상</div>
+                            </div>
+                        </label>
+                        <div class="option-score">5</div>
+                    </div>
+                    <div class="option" data-score="4" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">3개 이상 배달앱 활발히 운영</div>
+                            </div>
+                        </label>
+                        <div class="option-score">4</div>
+                    </div>
+                    <div class="option" data-score="3" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">1-2개 배달앱 운영 중</div>
+                            </div>
+                        </label>
+                        <div class="option-score">3</div>
+                    </div>
+                    <div class="option" data-score="2" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">입점 준비 중</div>
+                            </div>
+                        </label>
+                        <div class="option-score">2</div>
+                    </div>
+                    <div class="option" data-score="1" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">오프라인 매장만 운영</div>
+                            </div>
+                        </label>
+                        <div class="option-score">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="question-section" data-question="5">
+                <div class="question-header">
+                    <span class="question-category">온라인 채널</span>
+                    <div class="question-number">질문 5/12</div>
+                    <h2 class="question-title">SNS 및 온라인 마케팅</h2>
+                    <p class="question-subtitle">SNS나 온라인을 통한 마케팅 활동을 하고 있습니까?</p>
+                </div>
+                <div class="options">
+                    <div class="option" data-score="5" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">전문 마케터 운영 및 유료광고 집행</div>
+                            </div>
+                        </label>
+                        <div class="option-score">5</div>
+                    </div>
+                    <div class="option" data-score="4" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">정기적 콘텐츠 발행 및 고객 소통</div>
+                            </div>
+                        </label>
+                        <div class="option-score">4</div>
+                    </div>
+                    <div class="option" data-score="3" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">SNS 계정 운영 중 (간헐적)</div>
+                            </div>
+                        </label>
+                        <div class="option-score">3</div>
+                    </div>
+                    <div class="option" data-score="2" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">계정만 개설한 상태</div>
+                            </div>
+                        </label>
+                        <div class="option-score">2</div>
+                    </div>
+                    <div class="option" data-score="1" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">온라인 활동 없음</div>
+                            </div>
+                        </label>
+                        <div class="option-score">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 6 -->
+            <div class="question-section" data-question="6">
+                <div class="question-header">
+                    <span class="question-category">온라인 채널</span>
+                    <div class="question-number">질문 6/12</div>
+                    <h2 class="question-title">온라인 쇼핑몰</h2>
+                    <p class="question-subtitle">자체 쇼핑몰이나 오픈마켓을 운영하고 있습니까?</p>
+                </div>
+                <div class="options">
+                    <div class="option" data-score="5" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">자체몰과 다수 오픈마켓 운영</div>
+                            </div>
+                        </label>
+                        <div class="option-score">5</div>
+                    </div>
+                    <div class="option" data-score="4" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">자체 쇼핑몰 운영 중</div>
+                            </div>
+                        </label>
+                        <div class="option-score">4</div>
+                    </div>
+                    <div class="option" data-score="3" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">오픈마켓 입점</div>
+                            </div>
+                        </label>
+                        <div class="option-score">3</div>
+                    </div>
+                    <div class="option" data-score="2" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">준비 중</div>
+                            </div>
+                        </label>
+                        <div class="option-score">2</div>
+                    </div>
+                    <div class="option" data-score="1" data-area="online">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">계획 없음</div>
+                            </div>
+                        </label>
+                        <div class="option-score">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 7 -->
+            <div class="question-section" data-question="7">
+                <div class="question-header">
+                    <span class="question-category">데이터 활용</span>
+                    <div class="question-number">질문 7/12</div>
+                    <h2 class="question-title">고객 데이터 관리</h2>
+                    <p class="question-subtitle">고객 정보를 체계적으로 수집하고 관리하고 있습니까?</p>
+                </div>
+                <div class="options">
+                    <div class="option" data-score="5" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">CRM으로 세분화 및 맞춤 마케팅</div>
+                            </div>
+                        </label>
+                        <div class="option-score">5</div>
+                    </div>
+                    <div class="option" data-score="4" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">고객 DB 구축 및 정기 분석</div>
+                            </div>
+                        </label>
+                        <div class="option-score">4</div>
+                    </div>
+                    <div class="option" data-score="3" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">기본 고객 정보만 수집</div>
+                            </div>
+                        </label>
+                        <div class="option-score">3</div>
+                    </div>
+                    <div class="option" data-score="2" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">수기로 간단히 기록</div>
+                            </div>
+                        </label>
+                        <div class="option-score">2</div>
+                    </div>
+                    <div class="option" data-score="1" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">별도 관리 없음</div>
+                            </div>
+                        </label>
+                        <div class="option-score">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 8 -->
+            <div class="question-section" data-question="8">
+                <div class="question-header">
+                    <span class="question-category">데이터 활용</span>
+                    <div class="question-number">질문 8/12</div>
+                    <h2 class="question-title">매출 및 경영 데이터 분석</h2>
+                    <p class="question-subtitle">매출 데이터를 분석하여 경영 의사결정에 활용하고 있습니까?</p>
+                </div>
+                <div class="options">
+                    <div class="option" data-score="5" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">AI 분석 및 예측 시스템 활용</div>
+                            </div>
+                        </label>
+                        <div class="option-score">5</div>
+                    </div>
+                    <div class="option" data-score="4" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">정기적 데이터 분석 및 전략 수립</div>
+                            </div>
+                        </label>
+                        <div class="option-score">4</div>
+                    </div>
+                    <div class="option" data-score="3" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">월별 매출 추이 확인</div>
+                            </div>
+                        </label>
+                        <div class="option-score">3</div>
+                    </div>
+                    <div class="option" data-score="2" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">간헐적으로 확인</div>
+                            </div>
+                        </label>
+                        <div class="option-score">2</div>
+                    </div>
+                    <div class="option" data-score="1" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">대략적으로만 파악</div>
+                            </div>
+                        </label>
+                        <div class="option-score">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 9 -->
+            <div class="question-section" data-question="9">
+                <div class="question-header">
+                    <span class="question-category">데이터 활용</span>
+                    <div class="question-number">질문 9/12</div>
+                    <h2 class="question-title">재고 데이터 관리</h2>
+                    <p class="question-subtitle">재고 현황을 실시간으로 파악하고 관리하고 있습니까?</p>
+                </div>
+                <div class="options">
+                    <div class="option" data-score="5" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">AI 자동 발주 시스템 운영</div>
+                            </div>
+                        </label>
+                        <div class="option-score">5</div>
+                    </div>
+                    <div class="option" data-score="4" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">실시간 재고관리 시스템 운영</div>
+                            </div>
+                        </label>
+                        <div class="option-score">4</div>
+                    </div>
+                    <div class="option" data-score="3" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">엑셀로 정기 관리</div>
+                            </div>
+                        </label>
+                        <div class="option-score">3</div>
+                    </div>
+                    <div class="option" data-score="2" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">수기로 기록</div>
+                            </div>
+                        </label>
+                        <div class="option-score">2</div>
+                    </div>
+                    <div class="option" data-score="1" data-area="data">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">눈으로만 확인</div>
+                            </div>
+                        </label>
+                        <div class="option-score">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 10 -->
+            <div class="question-section" data-question="10">
+                <div class="question-header">
+                    <span class="question-category">자동화 수준</span>
+                    <div class="question-number">질문 10/12</div>
+                    <h2 class="question-title">주문 처리 자동화</h2>
+                    <p class="question-subtitle">주문부터 조리, 서빙까지 자동화가 되어 있습니까?</p>
+                </div>
+                <div class="options">
+                    <div class="option" data-score="5" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">서빙로봇까지 완전 자동화</div>
+                            </div>
+                        </label>
+                        <div class="option-score">5</div>
+                    </div>
+                    <div class="option" data-score="4" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">주방 디스플레이와 연동 자동화</div>
+                            </div>
+                        </label>
+                        <div class="option-score">4</div>
+                    </div>
+                    <div class="option" data-score="3" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">주방에 주문 자동 전송</div>
+                            </div>
+                        </label>
+                        <div class="option-score">3</div>
+                    </div>
+                    <div class="option" data-score="2" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">수기 전달 후 조리</div>
+                            </div>
+                        </label>
+                        <div class="option-score">2</div>
+                    </div>
+                    <div class="option" data-score="1" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">모든 과정이 수작업</div>
+                            </div>
+                        </label>
+                        <div class="option-score">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 11 -->
+            <div class="question-section" data-question="11">
+                <div class="question-header">
+                    <span class="question-category">자동화 수준</span>
+                    <div class="question-number">질문 11/12</div>
+                    <h2 class="question-title">정산 및 회계 자동화</h2>
+                    <p class="question-subtitle">매출 정산과 회계 처리가 자동으로 이루어집니까?</p>
+                </div>
+                <div class="options">
+                    <div class="option" data-score="5" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">세무회계까지 완전 자동 연동</div>
+                            </div>
+                        </label>
+                        <div class="option-score">5</div>
+                    </div>
+                    <div class="option" data-score="4" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">회계프로그램 자동 연동</div>
+                            </div>
+                        </label>
+                        <div class="option-score">4</div>
+                    </div>
+                    <div class="option" data-score="3" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">일일 정산 자동화</div>
+                            </div>
+                        </label>
+                        <div class="option-score">3</div>
+                    </div>
+                    <div class="option" data-score="2" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">수기로 입력</div>
+                            </div>
+                        </label>
+                        <div class="option-score">2</div>
+                    </div>
+                    <div class="option" data-score="1" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">세무사에게 일괄 의뢰</div>
+                            </div>
+                        </label>
+                        <div class="option-score">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 12 -->
+            <div class="question-section" data-question="12">
+                <div class="question-header">
+                    <span class="question-category">자동화 수준</span>
+                    <div class="question-number">질문 12/12</div>
+                    <h2 class="question-title">고객 응대 자동화</h2>
+                    <p class="question-subtitle">챗봇이나 자동 응답 시스템을 운영하고 있습니까?</p>
+                </div>
+                <div class="options">
+                    <div class="option" data-score="5" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">AI 챗봇과 음성봇 모두 운영</div>
+                            </div>
+                        </label>
+                        <div class="option-score">5</div>
+                    </div>
+                    <div class="option" data-score="4" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">챗봇으로 기본 상담 자동화</div>
+                            </div>
+                        </label>
+                        <div class="option-score">4</div>
+                    </div>
+                    <div class="option" data-score="3" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">자동응답 메시지 설정</div>
+                            </div>
+                        </label>
+                        <div class="option-score">3</div>
+                    </div>
+                    <div class="option" data-score="2" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">FAQ만 게시</div>
+                            </div>
+                        </label>
+                        <div class="option-score">2</div>
+                    </div>
+                    <div class="option" data-score="1" data-area="automation">
+                        <label class="option-label">
+                            <div class="option-radio"></div>
+                            <div class="option-content">
+                                <div class="option-title">전화와 대면 응대만</div>
+                            </div>
+                        </label>
+                        <div class="option-score">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div class="result-section">
+                <div class="result-header">
+                    <h2>진단 결과</h2>
+                    <p>귀사의 스마트상점 수준을 4대 영역으로 분석했습니다.</p>
+                </div>
+
+                <div class="result-chart">
+                    <h3 class="chart-title">영역별 스마트화 점수</h3>
+                    <div class="chart-bars">
+                        <div class="chart-bar">
+                            <div class="chart-track">
+                                <div class="chart-fill infrastructure" id="infrastructureBar">
+                                    <span class="chart-score" id="infrastructureScore">0</span>
+                                </div>
+                            </div>
+                            <div class="chart-label">인프라</div>
+                        </div>
+                        <div class="chart-bar">
+                            <div class="chart-track">
+                                <div class="chart-fill online" id="onlineBar">
+                                    <span class="chart-score" id="onlineScore">0</span>
+                                </div>
+                            </div>
+                            <div class="chart-label">온라인</div>
+                        </div>
+                        <div class="chart-bar">
+                            <div class="chart-track">
+                                <div class="chart-fill data" id="dataBar">
+                                    <span class="chart-score" id="dataScore">0</span>
+                                </div>
+                            </div>
+                            <div class="chart-label">데이터</div>
+                        </div>
+                        <div class="chart-bar">
+                            <div class="chart-track">
+                                <div class="chart-fill automation" id="automationBar">
+                                    <span class="chart-score" id="automationScore">0</span>
+                                </div>
+                            </div>
+                            <div class="chart-label">자동화</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="consultant-comment">
+                    <h3>전문가 종합 의견</h3>
+                    <div class="consultant-comment-text" id="consultantComment"></div>
+                </div>
+
+                <div class="recommendation-section">
+                    <h3>맞춤형 스마트화 로드맵</h3>
+                    <div class="recommendation-list" id="recommendationList"></div>
+                </div>
+
+                <button class="btn-restart" onclick="restart()">처음부터 다시 진단하기</button>
+
+                <div class="contact-info">
+                    <p>본 진단은 스마트상점 지원사업을 준비하시는 사업주께서 사업 수행전 준비를 도울 수 있도록 제작된 간이 진단입니다. 더 상세한 분석이나 전문가 상담이 필요하시면 하단의 <strong>상담문의</strong>를 이용해주시기 바랍니다.</p>
+                    <p><strong>코리아경영자문은 스마트 상점과 관련된 컨설팅에 대해 어떠한 수수료(현금 결제, 보험 가입 유도 등)도 요구하지 않습니다.</strong></p>
+                </div>
+
+                <div class="copyright">
+                    © 코리아경영자문. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const answers = {};
+        let currentQuestion = 1;
+        const totalQuestions = 12;
+
+        const questionResources = {
+            1: ['infrastructure'],
+            2: ['infrastructure'],
+            3: ['infrastructure'],
+            4: ['online'],
+            5: ['online'],
+            6: ['online'],
+            7: ['data'],
+            8: ['data'],
+            9: ['data'],
+            10: ['automation'],
+            11: ['automation'],
+            12: ['automation']
+        };
+
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const questionSection = this.closest('.question-section');
+                const questionNum = parseInt(questionSection.dataset.question);
+                const score = parseInt(this.dataset.score);
+                
+                questionSection.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                this.classList.add('selected');
+                answers[questionNum] = score;
+                
+                // 즉시 스크롤
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                setTimeout(() => {
+                    if (questionNum < totalQuestions) {
+                        nextQuestion();
+                    } else {
+                        showResults();
+                    }
+                }, 500);
+            });
+        });
+
+        function updateProgress() {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `질문 ${currentQuestion} / ${totalQuestions}`;
+        }
+
+        function nextQuestion() {
+            document.querySelector(`[data-question="${currentQuestion}"]`).classList.remove('active');
+            currentQuestion++;
+            document.querySelector(`[data-question="${currentQuestion}"]`).classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function calculateScores() {
+            const scores = {
+                infrastructure: 0,
+                online: 0,
+                data: 0,
+                automation: 0
+            };
+
+            for (let q = 1; q <= totalQuestions; q++) {
+                const score = answers[q] || 0;
+                const resources = questionResources[q];
+                
+                resources.forEach(resource => {
+                    scores[resource] += score;
+                });
+            }
+
+            // 각 영역당 3문항이므로 백분율로 환산
+            return {
+                infrastructure: Math.round((scores.infrastructure / 15) * 100),
+                online: Math.round((scores.online / 15) * 100),
+                data: Math.round((scores.data / 15) * 100),
+                automation: Math.round((scores.automation / 15) * 100)
+            };
+        }
+
+        function generateConsultantComment(scores) {
+            const avgScore = (scores.infrastructure + scores.online + scores.data + scores.automation) / 4;
+            let comment = '';
+
+            // 종합 평가
+            if (avgScore >= 75) {
+                comment += '귀사는 스마트상점으로의 디지털 전환이 매우 잘 이루어진 선도적인 사업장입니다. 높은 수준의 디지털 인프라와 데이터 활용 역량을 보유하고 있으며, 자동화를 통해 운영 효율을 극대화하고 있습니다.\n\n';
+            } else if (avgScore >= 50) {
+                comment += '귀사는 스마트상점으로의 전환을 진행 중이며, 일부 영역에서 좋은 성과를 보이고 있습니다. 취약한 영역을 집중 보완한다면 완전한 스마트상점으로 도약할 수 있습니다.\n\n';
+            } else {
+                comment += '귀사는 스마트상점으로의 전환 초기 단계에 있습니다. 체계적인 디지털화 계획을 수립하고 단계적으로 추진한다면, 경쟁력 있는 스마트상점으로 성장할 수 있습니다.\n\n';
+            }
+
+            // 디지털 인프라 분석
+            if (scores.infrastructure < 50) {
+                comment += '<strong>디지털 인프라 개선 필요</strong><br>POS 시스템과 키오스크 등 기본 인프라 구축이 시급합니다. 우선 클라우드 기반 POS를 도입하여 매출과 재고를 실시간으로 파악하고, 키오스크를 통해 인건비를 절감하면서 고객 편의를 높이시기 바랍니다. 소상공인 디지털 전환 지원사업을 활용하면 저렴하게 구축할 수 있습니다.\n\n';
+            } else if (scores.infrastructure < 75) {
+                comment += '<strong>디지털 인프라 양호</strong><br>기본적인 디지털 인프라는 갖추어져 있습니다. 이제는 시스템 간 연동을 강화하고, 디지털 사이니지나 스마트 센서 등을 추가하여 고객 경험을 한층 업그레이드하시기 바랍니다.\n\n';
+            } else {
+                comment += '<strong>디지털 인프라 우수</strong><br>최신 디지털 인프라를 잘 구축하고 있습니다. 이제는 AI 기술을 접목하여 고객 맞춤 추천이나 예측 분석 등 더 스마트한 기능을 추가하시기 바랍니다.\n\n';
+            }
+
+            // 온라인 채널 분석
+            if (scores.online < 50) {
+                comment += '<strong>온라인 채널 확대 필요</strong><br>배달앱 입점과 SNS 마케팅을 즉시 시작하시기 바랍니다. 특히 배달앱은 매출 확대의 핵심 채널이므로 최소 2-3개 플랫폼에 입점하시고, 인스타그램과 네이버 블로그를 통해 꾸준히 홍보하시기 바랍니다.\n\n';
+            } else if (scores.online < 75) {
+                comment += '<strong>온라인 채널 양호</strong><br>온라인 채널을 활용하고 있으나 더 확대할 여지가 있습니다. SNS 콘텐츠를 정기적으로 발행하고, 유료 광고도 소액으로 테스트해보시기 바랍니다. 자체 쇼핑몰 구축도 검토해보시기 바랍니다.\n\n';
+            } else {
+                comment += '<strong>온라인 채널 우수</strong><br>온라인 채널을 매우 잘 활용하고 있습니다. 이제는 라이브커머스나 인플루언서 마케팅 등 새로운 채널도 시도해보시고, 데이터 분석을 통해 채널별 ROI를 최적화하시기 바랍니다.\n\n';
+            }
+
+            // 데이터 활용 분석
+            if (scores.data < 50) {
+                comment += '<strong>데이터 활용 강화 필요</strong><br>고객 데이터와 매출 데이터를 체계적으로 수집하고 분석하는 것이 매우 중요합니다. 간단한 고객 관리 앱을 도입하여 단골 고객을 확보하고, POS 데이터를 엑셀로라도 정리하여 월별 트렌드를 파악하시기 바랍니다.\n\n';
+            } else if (scores.data < 75) {
+                comment += '<strong>데이터 활용 양호</strong><br>데이터를 수집하고 있으나, 더 적극적인 분석과 활용이 필요합니다. CRM 시스템을 도입하여 고객을 세분화하고, 데이터 기반 마케팅을 실행하시기 바랍니다. 재고 최적화에도 데이터를 활용하시기 바랍니다.\n\n';
+            } else {
+                comment += '<strong>데이터 활용 우수</strong><br>데이터를 매우 잘 활용하고 있습니다. AI 기반 수요 예측이나 고객 이탈 방지 모델 등 고급 분석 기법도 도입해보시기 바랍니다.\n\n';
+            }
+
+            // 자동화 수준 분석
+            if (scores.automation < 50) {
+                comment += '<strong>자동화 추진 필요</strong><br>주문과 정산 등 반복 업무를 자동화하면 인건비와 실수를 크게 줄일 수 있습니다. 주방에 주문 자동 전송 시스템을 우선 도입하시고, 정산 자동화 프로그램도 활용하시기 바랍니다.\n\n';
+            } else if (scores.automation < 75) {
+                comment += '<strong>자동화 양호</strong><br>기본적인 자동화는 이루어져 있습니다. 서빙로봇이나 챗봇 등 추가 자동화를 검토하시고, 세무회계까지 완전 연동하여 업무 효율을 극대화하시기 바랍니다.\n\n';
+            } else {
+                comment += '<strong>자동화 우수</strong><br>높은 수준의 자동화를 달성했습니다. 이제는 AI를 활용한 지능형 자동화나 로봇 프로세스 자동화(RPA) 등 첨단 기술을 적용하시기 바랍니다.\n\n';
+            }
+
+            // 종합 제안
+            const weakAreas = [];
+            if (scores.infrastructure < 60) weakAreas.push('디지털 인프라');
+            if (scores.online < 60) weakAreas.push('온라인 채널');
+            if (scores.data < 60) weakAreas.push('데이터 활용');
+            if (scores.automation < 60) weakAreas.push('자동화');
+
+            if (weakAreas.length > 0) {
+                comment += `특히 ${weakAreas.join(', ')} 영역에 집중하여 단계적으로 스마트화를 추진하시기를 권장합니다. `;
+            }
+
+            comment += '소상공인 스마트상점 기술보급 사업 등 정부 지원을 적극 활용하시면 비용 부담을 크게 줄이실 수 있습니다.';
+
+            return comment;
+        }
+
+        function displayRecommendations(scores) {
+            const recommendations = [];
+            const avgScore = (scores.infrastructure + scores.online + scores.data + scores.automation) / 4;
+
+            // 1단계: 기초 스마트화 (40점 미만)
+            if (avgScore < 40 || scores.infrastructure < 40 || scores.online < 40 || scores.data < 40 || scores.automation < 40) {
+                let step1Content = '<strong>📱 이것부터 시작하세요</strong><br><br>';
+                
+                if (scores.infrastructure < 40) {
+                    step1Content += '<strong>1. 스마트 계산대(POS) 설치</strong><br>';
+                    step1Content += '카드단말기 대신 태블릿 계산대를 쓰면 매출이 자동으로 집계되고 휴대폰에서 언제든 확인할 수 있습니다. 장부 쓰는 시간이 하루 2시간 줄어들고, 재고도 자동으로 빠집니다. 200만원짜리를 정부 지원받으면 60만원에 가능합니다.<br><br>';
+                    
+                    step1Content += '<strong>2. 무인 주문기(키오스크) 설치</strong><br>';
+                    step1Content += '테이블에서 손님이 직접 주문하면 직원 1명 줄일 수 있어요. 월급 200만원이 절약되고, 주문 실수도 없어집니다. 사진으로 메뉴를 보여주니까 외국인도 쉽게 주문합니다. 150만원짜리를 45만원에 가능합니다.<br><br>';
+                }
+                
+                if (scores.online < 40) {
+                    step1Content += '<strong>3. 배달앱 입점하기</strong><br>';
+                    step1Content += '배민, 쿠팡이츠, 요기요에 들어가면 반경 3km 안에 사는 5만명한테 내 가게가 보입니다. 비 오는 날이나 밤에도 주문이 들어와서 매출이 30% 늘어납니다. 입점비 50만원을 무료로 지원받을 수 있습니다.<br><br>';
+                    
+                    step1Content += '<strong>4. 인스타그램 시작하기</strong><br>';
+                    step1Content += '음식 사진만 예쁘게 찍어서 올리면 됩니다. 해시태그 달면 젊은 손님들이 찾아오고, 네이버 지도에도 내 가게가 상위에 뜹니다. 무료인데 광고 교육도 무료로 받을 수 있습니다.<br><br>';
+                }
+                
+                if (scores.data < 40) {
+                    step1Content += '<strong>5. 단골 손님 관리 시작하기</strong><br>';
+                    step1Content += '전화번호만 받아두면 생일에 자동으로 쿠폰 문자가 갑니다. 단골 손님이 다시 올 확률이 20% 늘어나고, VIP는 따로 관리할 수 있습니다. 한 달에 3만원이면 됩니다.<br><br>';
+                }
+                
+                if (scores.automation < 40) {
+                    step1Content += '<strong>6. 주방에 주문 자동으로 보내기</strong><br>';
+                    step1Content += '손님이 주문하면 주방 화면이나 프린터로 바로 나옵니다. 직원이 주문서 들고 왔다갔다 안 해도 되고, 주문이 밀려도 놓치지 않습니다. 180만원짜리를 54만원에 가능합니다.<br><br>';
+                }
+                
+                step1Content += '💰 <strong>정부 지원금:</strong> 위 장비들을 묶어서 신청하면 총 비용의 70%를 나라에서 대줍니다. 1,000만원짜리를 300만원에 할 수 있어요.';
+                
+                recommendations.push({
+                    title: '🎯 1단계: 기초 스마트화 (지금 당장 필요한 것)',
+                    desc: step1Content
+                });
+            }
+
+            // 2단계: 중급 스마트화 (40-60점)
+            if ((avgScore >= 40 && avgScore < 60) || (scores.infrastructure >= 40 && scores.infrastructure < 60) || 
+                (scores.online >= 40 && scores.online < 60) || (scores.data >= 40 && scores.data < 60) || 
+                (scores.automation >= 40 && scores.automation < 60)) {
+                let step2Content = '<strong>📈 이미 기본은 갖추셨으니 이제 업그레이드하세요</strong><br><br>';
+                
+                if (scores.infrastructure >= 40 && scores.infrastructure < 60) {
+                    step2Content += '<strong>1. 주방 모니터 설치</strong><br>';
+                    step2Content += '주문이 주방 TV에 크게 뜨면 조리사가 한눈에 보고 빠르게 만듭니다. 손님 대기 시간이 줄어들어 회전율이 15% 늘고, 종이 주문서도 안 써도 됩니다. 300만원짜리를 90만원에 가능합니다.<br><br>';
+                    
+                    step2Content += '<strong>2. 전자 메뉴판 설치</strong><br>';
+                    step2Content += '벽에 TV 걸어서 메뉴를 보여주면 종이 메뉴판 안 바꿔도 됩니다. 점심·저녁 메뉴를 자동으로 바꾸고, 영상으로 음식을 보여주면 손님이 비싼 메뉴를 더 많이 시킵니다(12% 증가). 250만원짜리를 75만원에 가능합니다.<br><br>';
+                }
+                
+                if (scores.online >= 40 && scores.online < 60) {
+                    step2Content += '<strong>3. 인스타 광고 시작하기</strong><br>';
+                    step2Content += '우리 동네 사람들한테만 보이는 광고를 한 달에 30만원만 써도 신규 손님 50명이 옵니다. 마이크로 인플루언서한테 음식 주고 홍보 부탁하면 효과가 좋습니다. 광고비 50만원을 지원받을 수 있습니다.<br><br>';
+                    
+                    step2Content += '<strong>4. 내 가게 전용 앱 만들기</strong><br>';
+                    step2Content += '배달앱 수수료(7%)가 아까우면 우리 가게 앱을 만드세요. 손님 정보가 내 것이 되고, 쿠폰이나 포인트로 단골을 만들 수 있습니다. 800만원짜리를 240만원에 가능합니다.<br><br>';
+                }
+                
+                if (scores.data >= 40 && scores.data < 60) {
+                    step2Content += '<strong>5. 고객관리 프로그램(CRM) 도입</strong><br>';
+                    step2Content += '배달앱 손님, 매장 손님을 한곳에 모아서 관리하면 누가 단골인지 한눈에 보입니다. 안 오던 손님한테 자동으로 쿠폰 보내고, 그룹별로 다른 마케팅을 할 수 있습니다. 600만원짜리를 180만원에 가능합니다.<br><br>';
+                    
+                    step2Content += '<strong>6. 재고관리 프로그램 도입</strong><br>';
+                    step2Content += '냉장고에 뭐가 얼마나 있는지 자동으로 기록되고, 떨어지면 알림이 옵니다. 유통기한 임박한 재료를 먼저 쓰라고 알려줘서 버리는 게 40% 줄어듭니다. 400만원짜리를 120만원에 가능합니다.<br><br>';
+                }
+                
+                if (scores.automation >= 40 && scores.automation < 60) {
+                    step2Content += '<strong>7. 세금 자동 처리</strong><br>';
+                    step2Content += '계산대 매출이 회계 프로그램으로 자동 입력돼서 부가세 신고를 클릭 한 번으로 끝냅니다. 세무사 비용이 월 20만원에서 10만원으로 줄어듭니다. 200만원짜리를 60만원에 가능합니다.<br><br>';
+                    
+                    step2Content += '<strong>8. 챗봇 자동 응답</strong><br>';
+                    step2Content += '영업시간, 주소, 메뉴 묻는 전화를 챗봇이 24시간 답해줍니다. 전화 받느라 정신없던 시간이 하루 2시간 줄고, 새벽에도 예약을 받을 수 있습니다. 300만원짜리를 90만원에 가능합니다.<br><br>';
+                }
+                
+                step2Content += '💰 <strong>정부 지원금:</strong> 이미 기본 시스템이 있으면 고도화 지원사업으로 최대 3,000만원까지 받을 수 있습니다.';
+                
+                recommendations.push({
+                    title: '⚡ 2단계: 중급 스마트화 (경쟁력 높이기)',
+                    desc: step2Content
+                });
+            }
+
+            // 3단계: 고급 스마트화 (60점 이상)
+            if (avgScore >= 60 || scores.infrastructure >= 60 || scores.online >= 60 || scores.data >= 60 || scores.automation >= 60) {
+                let step3Content = '<strong>🚀 이미 스마트하시네요! 이제 최첨단으로 가세요</strong><br><br>';
+                
+                if (scores.infrastructure >= 60) {
+                    step3Content += '<strong>1. 서빙 로봇 도입</strong><br>';
+                    step3Content += '로봇이 음식을 나르면 직원 1명이 필요 없어서 월 220만원이 절약됩니다. 손님들이 신기해하고 사진 찍어서 SNS에 올려주니까 공짜 광고 효과도 있습니다. 2,000만원짜리를 월 80만원씩 빌릴 수 있습니다.<br><br>';
+                    
+                    step3Content += '<strong>2. IoT 센서로 똑똑한 가게 만들기</strong><br>';
+                    step3Content += '냉장고 온도, 가스, 전기를 자동으로 체크해서 문제 생기면 휴대폰으로 알려줍니다. 전기료도 월 15만원 줄고, 식재료 상하는 것도 막을 수 있습니다. 500만원짜리를 150만원에 가능합니다.<br><br>';
+                }
+                
+                if (scores.online >= 60) {
+                    step3Content += '<strong>3. 라이브 방송으로 제품 팔기</strong><br>';
+                    step3Content += '요리하는 모습을 생방송으로 보여주면서 소스, 밀키트를 팔 수 있습니다. 한 번 방송하면 평균 300만원이 팔리고, 매장 손님 외에 새로운 수익이 생깁니다. 장비 500만원을 무료로 지원받고 스튜디오도 공짜로 쓸 수 있습니다.<br><br>';
+                }
+                
+                if (scores.data >= 60) {
+                    step3Content += '<strong>4. AI가 내일 필요한 재료 예측</strong><br>';
+                    step3Content += '날씨, 요일, 지난 데이터를 보고 AI가 내일 몇 인분 팔릴지 알려줍니다. 정확도가 95%라서 재고를 딱 맞게 준비하고 남는 게 70% 줄어듭니다. 1,200만원짜리를 360만원에 가능합니다.<br><br>';
+                }
+                
+                if (scores.automation >= 60) {
+                    step3Content += '<strong>5. 24시간 무인 운영</strong><br>';
+                    step3Content += '서빙 로봇 + 무인 주문 + 자동 정산을 합치면 심야에 직원 없이도 가게를 열 수 있습니다. 새벽 매출 월 500만원이 추가되고 인건비는 월 300만원 줄어듭니다. 5,000만원짜리를 1,500만원에 가능합니다.<br><br>';
+                    
+                    step3Content += '<strong>6. AI가 전화 주문 받기</strong><br>';
+                    step3Content += '전화 걸면 AI가 자동으로 주문 받아서 계산대에 입력합니다. 주문 받는 직원이 필요 없고, 영어·중국어도 자동 번역됩니다. AI가 추천 메뉴까지 말해줘서 손님이 더 많이 삽니다(18% 증가). 800만원짜리를 240만원에 가능합니다.<br><br>';
+                }
+                
+                step3Content += '🏆 <strong>특별 지원:</strong> 스마트 우수 매장으로 선정되면 추가로 5,000만원 투자를 받고, TV에도 나올 수 있습니다.';
+                
+                recommendations.push({
+                    title: '🌟 3단계: 고급 스마트화 (최첨단 기술)',
+                    desc: step3Content
+                });
+            }
+
+            // 종합 지원 안내
+            if (avgScore < 50) {
+                recommendations.push({
+                    title: '💡 꼭 알아두세요',
+                    desc: '정부가 스마트상점 만들려는 가게에 최대 70%를 지원합니다. 1,000만원 들 일을 300만원에 할 수 있고, 인건비가 월 200만원 줄어들어 2년이면 본전 뽑습니다. 1년에 2번 신청 기회가 있으니 놓치지 마세요.'
+                });
+            } else if (avgScore >= 75) {
+                recommendations.push({
+                    title: '💡 우수 매장 혜택',
+                    desc: '이미 훌륭하게 스마트화하셨네요! 우수 사례로 신청하면 정부에서 홍보 영상 찍어주고, 벤치마킹 오는 사람들한테도 소개됩니다. 프랜차이즈나 해외 진출 컨설팅도 무료로 받을 수 있습니다.'
+                });
+            }
+
+            // 렌더링
+            let html = '';
+            recommendations.forEach(rec => {
+                html += `
+                    <div class="recommendation-item">
+                        <h4>${rec.title}</h4>
+                        <p>${rec.desc}</p>
+                    </div>
+                `;
+            });
+            document.getElementById('recommendationList').innerHTML = html;
+        }
+
+        function showResults() {
+            const scores = calculateScores();
+            
+            document.querySelector(`[data-question="${currentQuestion}"]`).classList.remove('active');
+            document.querySelector('.result-section').classList.add('active');
+            document.querySelector('.progress-bar').style.display = 'none';
+
+            // 차트 애니메이션
+            setTimeout(() => {
+                document.getElementById('infrastructureBar').style.height = scores.infrastructure + '%';
+                document.getElementById('infrastructureScore').textContent = scores.infrastructure;
+                
+                document.getElementById('onlineBar').style.height = scores.online + '%';
+                document.getElementById('onlineScore').textContent = scores.online;
+                
+                document.getElementById('dataBar').style.height = scores.data + '%';
+                document.getElementById('dataScore').textContent = scores.data;
+                
+                document.getElementById('automationBar').style.height = scores.automation + '%';
+                document.getElementById('automationScore').textContent = scores.automation;
+            }, 100);
+
+            // 컨설턴트 코멘트
+            const consultantComment = generateConsultantComment(scores);
+            document.getElementById('consultantComment').innerHTML = consultantComment;
+
+            // 추천 프로그램
+            displayRecommendations(scores);
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function restart() {
+            Object.keys(answers).forEach(key => delete answers[key]);
+            currentQuestion = 1;
+            
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            document.querySelector('.result-section').classList.remove('active');
+            document.querySelector('[data-question="1"]').classList.add('active');
+            document.querySelector('.progress-bar').style.display = 'block';
+            
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        updateProgress();
+    </script>
+</body>
+</html>
